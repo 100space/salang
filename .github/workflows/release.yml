@@ -27,8 +27,9 @@ jobs:
     timeout-minutes: 20
     env:
       PYTHONDONTWRITEBYTECODE: '1'
-      XDG_CONFIG_HOME: ${{ runner.temp }}/salang-settings
     steps:
+      - name: Configure settings directory
+        run: printf 'XDG_CONFIG_HOME=%s/salang-settings\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false

@@ -28,7 +28,7 @@ from seasonal import draw_accents, draw_fog
 from terminal_ui import FOREGROUND, MUTED, color_escape, fit_text, hint_line, read_key, screen_frame, styled_line, text_width
 
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 SEASONS = ("spring", "summer", "autumn", "winter")
 WEATHERS = ("clear", "wind", "rain", "snow", "cloudy")
 SEASON_LABELS = dict(zip(SEASONS, ("봄", "여름", "가을", "겨울")))
