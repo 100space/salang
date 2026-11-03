@@ -1,0 +1,84 @@
+name: Test and release Salang
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-14
+            asset: darwin-arm64
+          - runner: macos-15-intel
+            asset: darwin-amd64
+          - runner: ubuntu-22.04
+            asset: linux-amd64
+          - runner: ubuntu-22.04-arm
+            asset: linux-arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      XDG_CONFIG_HOME: ${{ runner.temp }}/salang-settings
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Check release version
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: python -c 'import salang, os; assert os.environ["RELEASE_TAG"] == "v" + salang.VERSION'
+      - name: Install verified build dependencies
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r "$GITHUB_WORKSPACE/requirements-build.txt"
+      - name: Test application and installer
+        run: |
+          python "$GITHUB_WORKSPACE/check_salang.py"
+          python "$GITHUB_WORKSPACE/check_install.py"
+      - name: Build and verify standalone executable
+        run: python "$GITHUB_WORKSPACE/tools/build_release.py" --output "$GITHUB_WORKSPACE/dist"
+      - name: Test standalone installation and terminal menu
+        run: python "$GITHUB_WORKSPACE/check_bundle.py" "$GITHUB_WORKSPACE/dist/salang-${{ matrix.asset }}"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: build-${{ matrix.asset }}
+          path: ${{ github.workspace }}/dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: build-*
+          merge-multiple: true
+          path: ${{ github.workspace }}/dist
+      - name: Verify release checksums
+        run: python3 "$GITHUB_WORKSPACE/tools/release_checksums.py" "$GITHUB_WORKSPACE/dist"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" "$GITHUB_WORKSPACE"/dist/salang-* "$GITHUB_WORKSPACE/dist/SHA256SUMS" "$GITHUB_WORKSPACE/install.sh" --verify-tag --title "Salang $RELEASE_TAG" --notes-file "$GITHUB_WORKSPACE/RELEASE_NOTES.md"

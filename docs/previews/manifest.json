@@ -1,0 +1,182 @@
+[
+  {
+    "file": "scenes/spring-clear.png",
+    "season": "spring",
+    "weather": "clear",
+    "description": "벚꽃 · 나비",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/summer-clear.png",
+    "season": "summer",
+    "weather": "clear",
+    "description": "초록 잎 · 그네",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/autumn-clear.png",
+    "season": "autumn",
+    "weather": "clear",
+    "description": "단풍 · 낙엽",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/winter-clear.png",
+    "season": "winter",
+    "weather": "clear",
+    "description": "눈 쌓인 가지 · 눈사람",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/spring-wind.png",
+    "season": "spring",
+    "weather": "wind",
+    "description": "벚꽃비 · 민들레 씨앗",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/summer-wind.png",
+    "season": "summer",
+    "weather": "wind",
+    "description": "초록 잎 · 바람개비",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/autumn-wind.png",
+    "season": "autumn",
+    "weather": "wind",
+    "description": "단풍 · 구르는 낙엽",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/winter-wind.png",
+    "season": "winter",
+    "weather": "wind",
+    "description": "눈사람 · 흔들리는 목도리",
+    "elapsed_seconds": 0.8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/spring-rain.png",
+    "season": "spring",
+    "weather": "rain",
+    "description": "벚꽃 · 봄비",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/summer-rain.png",
+    "season": "summer",
+    "weather": "rain",
+    "description": "빗물 · 파문",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/autumn-rain.png",
+    "season": "autumn",
+    "weather": "rain",
+    "description": "가을비 · 버섯",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/winter-rain.png",
+    "season": "winter",
+    "weather": "rain",
+    "description": "겨울비 · 눈사람",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/spring-snow.png",
+    "season": "spring",
+    "weather": "snow",
+    "description": "벚꽃 · 눈발",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/summer-snow.png",
+    "season": "summer",
+    "weather": "snow",
+    "description": "초록 잎 · 눈발",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/autumn-snow.png",
+    "season": "autumn",
+    "weather": "snow",
+    "description": "단풍 · 눈발",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/winter-snow.png",
+    "season": "winter",
+    "weather": "snow",
+    "description": "눈사람 · 소복이 쌓이는 눈",
+    "elapsed_seconds": 32,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/spring-cloudy.png",
+    "season": "spring",
+    "weather": "cloudy",
+    "description": "벚꽃 · 안개",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/summer-cloudy.png",
+    "season": "summer",
+    "weather": "cloudy",
+    "description": "초록 잎 · 안개",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/autumn-cloudy.png",
+    "season": "autumn",
+    "weather": "cloudy",
+    "description": "단풍 · 안개",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  },
+  {
+    "file": "scenes/winter-cloudy.png",
+    "season": "winter",
+    "weather": "cloudy",
+    "description": "눈사람 · 안개",
+    "elapsed_seconds": 8,
+    "columns": 90,
+    "rows": 32
+  }
+]
