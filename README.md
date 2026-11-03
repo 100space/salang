@@ -9,12 +9,12 @@
 
 ## 설치
 
-> 아직 첫 GitHub 릴리스 게시 전입니다. 아래 설치 명령은 저장소와 릴리스가 공개된 뒤 사용할 수 있습니다. Homebrew 설치는 아직 제공하지 않습니다.
+> GitHub Releases에 실행 파일이 게시되어 있어야 설치할 수 있습니다. Homebrew 설치는 아직 제공하지 않습니다.
 
 macOS 또는 Linux의 터미널에 아래 한 줄을 붙여 넣으세요.
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/100space/salang/main/install.sh | sh
+curl -fsSL --proto '=https' --tlsv1.2 https://github.com/100space/salang/releases/latest/download/install.sh | sh
 ```
 
 설치가 끝나면 **새 터미널을 열고** 실행합니다.

@@ -28,7 +28,7 @@ from seasonal import draw_accents, draw_fog
 from terminal_ui import FOREGROUND, MUTED, color_escape, fit_text, hint_line, read_key, screen_frame, styled_line, text_width
 
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 SEASONS = ("spring", "summer", "autumn", "winter")
 WEATHERS = ("clear", "wind", "rain", "snow", "cloudy")
 SEASON_LABELS = dict(zip(SEASONS, ("봄", "여름", "가을", "겨울")))
@@ -65,6 +65,7 @@ DEFAULT_LOCATION = "서울 강남구"
 FRAME_INTERVAL = 0.2
 WEATHER_REFRESH_INTERVAL = 900
 WEATHER_RETRY_INTERVALS = (3, 10, 30, 60)
+MAX_WEATHER_RESPONSE_BYTES = 64 * 1024
 
 
 class Canvas:
@@ -206,7 +207,14 @@ def fetch_weather(latitude, longitude):
     request = urllib.request.Request("https://api.open-meteo.com/v1/forecast?" + query,
                                      headers={"User-Agent": "salang/" + VERSION})
     with urllib.request.urlopen(request, timeout=6) as response:
-        return parse_weather(json.load(response), latitude)
+        body = response.read(MAX_WEATHER_RESPONSE_BYTES + 1)
+    if len(body) > MAX_WEATHER_RESPONSE_BYTES:
+        raise ValueError("Weather API response is too large")
+    try:
+        payload = json.loads(body)
+    except RecursionError as error:
+        raise ValueError("Weather API JSON nesting is too deep") from error
+    return parse_weather(payload, latitude)
 
 
 def resolve_location(name):

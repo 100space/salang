@@ -30,6 +30,10 @@ from tools.benchmark import cpu_seconds
 
 
 SCRIPT = str(Path(__file__).with_name("salang.py"))
+WEATHER_RESPONSE = json.dumps({"current": {
+    "weather_code": 0, "temperature_2m": 12.5, "wind_speed_10m": 0,
+    "time": "2026-04-18T12:00",
+}}).encode()
 
 
 def read_output(master, expected, output, start=0):
@@ -82,6 +86,57 @@ def simulated_weather(clock, fetch, wait, key):
 
 
 class SalangChecks(unittest.TestCase):
+    def test_weather_response_size_boundary_rejects_oversize_without_truncation(self):
+        for size in (len(WEATHER_RESPONSE), 65536, 65537):
+            with self.subTest(size=size):
+                body = WEATHER_RESPONSE + b" " * (size - len(WEATHER_RESPONSE))
+                response = io.BytesIO(body)
+                with mock.patch.object(response, "read", wraps=response.read) as read, \
+                        mock.patch.object(salang.urllib.request, "urlopen", return_value=response):
+                    if size > 65536:
+                        with self.assertRaisesRegex(ValueError, "too large"):
+                            salang.fetch_weather(37, 127)
+                    else:
+                        self.assertEqual(salang.fetch_weather(37, 127), ("spring", "clear", 12.5))
+                read.assert_called_once_with(65537)
+
+    def test_nested_and_oversized_weather_show_offline_state_then_recover(self):
+        nested = b"[" * 2000 + b"0" + b"]" * 2000
+        oversized = WEATHER_RESPONSE + b" " * (65537 - len(WEATHER_RESPONSE))
+        self.assertLess(len(nested), 65536)
+        for body in (nested, oversized):
+            with mock.patch.object(sys, "argv", [SCRIPT, "--snapshot", "--location", "울릉도"]), \
+                    mock.patch.object(salang.urllib.request, "urlopen", return_value=io.BytesIO(body)), \
+                    contextlib.redirect_stdout(io.StringIO()) as output:
+                salang.main()
+            self.assertIn("날씨 연결 안 됨(open-meteo.com) · 임시 장면", output.getvalue())
+
+        clock, starts = [0.0], []
+        fetch_weather = salang.fetch_weather
+        bodies = (nested, oversized, WEATHER_RESPONSE)
+
+        def fetch(latitude, longitude):
+            index = len(starts)
+            starts.append(clock[0])
+            self.assertLess(index, len(bodies))
+            with mock.patch.object(salang.urllib.request, "urlopen", return_value=io.BytesIO(bodies[index])):
+                return fetch_weather(latitude, longitude)
+
+        def wait(readers, writers, errors, timeout):
+            self.assertLess(clock[0], 20, "Malformed weather did not recover")
+            clock[0] = math.nextafter(clock[0] + timeout, math.inf)
+            if "실시간(open-meteo.com) · 15분마다 갱신" in output.getvalue():
+                return readers, [], []
+            return [], [], []
+
+        with simulated_weather(clock, fetch, wait, lambda: "q") as (output, errors):
+            salang.main()
+        self.assertEqual(len(starts), 3)
+        for actual, expected in zip(starts, (0, 3, 13)):
+            self.assertAlmostEqual(actual, expected, places=5)
+        self.assertIn("12.5°C · 맑음 · 봄", output.getvalue())
+        self.assertEqual(errors.getvalue(), "")
+
     def test_retries_follow_completion_time_cap_at_sixty_and_reset_after_success(self):
         clock, starts, completed = [0.0], [], []
 
